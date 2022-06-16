@@ -12,7 +12,7 @@ from driver.decorators import authorized_users_only, sudo_users_only, errors
 
 
 @Client.on_message(
-    comman2(["انضم"]) & other_filters
+    command2(["انضم"]) & other_filters
 )
 @authorized_users_only
 async def join_chat(c: Client, m: Message):
