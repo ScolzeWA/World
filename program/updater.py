@@ -8,6 +8,7 @@ from asyncio import sleep
 from git import Repo
 from pyrogram.types import Message
 from driver.filters import command
+from driver.filters import command2, other_filters
 from pyrogram import Client, filters
 from os import system, execle, environ
 from driver.decorators import sudo_users_only
@@ -57,6 +58,21 @@ def updater():
 @Client.on_message(command(["update", f"update@{BOT_USERNAME}"]) & ~filters.edited)
 @sudo_users_only
 async def update_repo(_, message: Message):
+    await message.delete()
+    chat_id = message.chat.id
+    msg = await message.reply("🔄 `processing update...`")
+    update_avail = updater()
+    if update_avail:
+        await msg.edit("✅ update finished\n\n• bot restarted, back active again in 1 minutes.")
+        system("git pull -f && pip3 install --no-cache-dir -r requirements.txt")
+        execle(sys.executable, sys.executable, "main.py", environ)
+        return
+    await msg.edit(f"bot is **up-to-date** with [main](https://github.com/ScolzeWA)", disable_web_page_preview=True)
+
+@Client.on_message(command2(["تحديث","حدث"]) & ~filters.edited)
+@sudo_users_only
+async def update_repo(_, message: Message):
+    await message.delete()
     chat_id = message.chat.id
     msg = await message.reply("🔄 `processing update...`")
     update_avail = updater()
@@ -71,6 +87,17 @@ async def update_repo(_, message: Message):
 @Client.on_message(command(["restart", f"restart@{BOT_USERNAME}"]) & ~filters.edited)
 @sudo_users_only
 async def restart_bot(_, message: Message):
+    await message.delete()
+    msg = await message.reply("`restarting bot...`")
+    args = [sys.executable, "main.py"]
+    await msg.edit("✅ bot restarted\n\n• now you can use this bot again.")
+    execle(sys.executable, *args, environ)
+    return
+    
+@Client.on_message(command2(["ريستارت","اعاده تشغيل"]) & ~filters.edited)
+@sudo_users_only
+async def restart_bot(_, message: Message):
+    await message.delete()
     msg = await message.reply("`restarting bot...`")
     args = [sys.executable, "main.py"]
     await msg.edit("✅ bot restarted\n\n• now you can use this bot again.")
