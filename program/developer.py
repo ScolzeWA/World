@@ -9,7 +9,7 @@ from time import time
 from io import StringIO
 from sys import version as pyver
 from inspect import getfullargspec
-
+from driver.filters import command2, other_filters
 from config import BOT_USERNAME as bname
 from driver.veez import bot
 from driver.filters import command
@@ -34,6 +34,7 @@ async def edit_or_reply(msg: Message, **kwargs):
 @Client.on_message(command(["eval", f"eval{bname}"]) & ~filters.edited)
 @sudo_users_only
 async def executor(client, message):
+    await message.delete()
     if len(message.command) < 2:
         return await edit_or_reply(message, text="» Give a command to execute")
     try:
@@ -170,7 +171,24 @@ async def shellrunner(client, message):
         await edit_or_reply(message, text="`OUTPUT:`\n`no output`")
 
 
-@Client.on_message(command(["leavebot", f"خروج"]) & ~filters.edited)
+@Client.on_message(command(["leavebot"]) & ~filters.edited)
+@sudo_users_only
+async def bot_leave_group(_, message):
+    if len(message.command) != 2:
+        await message.reply_text(
+            "**usage:**\n\n» /leavebot [chat id]"
+        )
+        return
+    chat = message.text.split(None, 2)[1]
+    try:
+        await bot.leave_chat(chat)
+    except Exception as e:
+        await message.reply_text(f"❌ procces failed\n\nreason: `{e}`")
+        print(e)
+        return
+    await message.reply_text(f"✅ Bot successfully left from the Group:\n\n💭 » `{chat}`")
+
+@Client.on_message(command2(["خروج"]) & ~filters.edited)
 @sudo_users_only
 async def bot_leave_group(_, message):
     if len(message.command) != 2:

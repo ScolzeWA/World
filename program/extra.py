@@ -6,11 +6,12 @@ from pyrogram.types import Message
 from driver.filters import command
 from driver.decorators import sudo_users_only
 from driver.database.dbchat import get_served_chats
+from driver.filters import command2, other_filters
 
 from config import BOT_USERNAME as bn
 
 
-@Client.on_message(command(["اذاعه"]) & ~filters.edited)
+@Client.on_message(command2(["اذاعه"]) & ~filters.edited)
 @sudo_users_only
 async def broadcast(c: Client, message: Message):
     if not message.reply_to_message:
@@ -53,7 +54,7 @@ async def broadcast(c: Client, message: Message):
     await message.reply_text(f"✅ تمت الاذاعه إلى {sent} جروب في البوت.")
 
 
-@Client.on_message(command(["ذت", f"اذت"]) & ~filters.edited)
+@Client.on_message(command2(["ذت","اذت","اذع"]) & ~filters.edited)
 @sudo_users_only
 async def broadcast_pin(c: Client, message: Message):
     if not message.reply_to_message:

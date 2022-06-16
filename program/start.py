@@ -21,6 +21,7 @@ from config import (
 from program import __version__
 from driver.veez import user
 from driver.filters import command, other_filters
+from driver.filters import command2, other_filters
 from driver.decorators import sudo_users_only
 from driver.database.dbchat import add_served_chat, is_served_chat
 from driver.database.dbpunish import is_gbanned_user
@@ -100,8 +101,9 @@ async def start_(client: Client, message: Message):
     )
 
 
-@Client.on_message(command(["برمج السورس", f"ؤمن", f"ورس", f"لسورس", f"ادو", f"اضو"]) & filters.group & ~filters.edited)
+@Client.on_message(command(["source"]) & filters.group & ~filters.edited)
 async def start(client: Client, message: Message):
+    await message.delete()
     await message.reply_photo(
         photo=f"https://telegra.ph/file/a6c96cdbd066ca2388d06.jpg",
         caption=f"""ᴘʀᴏɢʀᴀᴍᴍᴇʀ [𝘿𝙀𝙑𝙀𝙇𝙊𝙋𝙀𝙍 ☤ ](https://t.me/WORLD_MUSIC_F) 𖡼\nᴛᴏ ᴄᴏᴍᴍụɴɪᴄᴀᴛᴇ ᴛᴏɢᴇᴛʜᴇʀ 𖡼\nғᴏʟʟᴏᴡ ᴛʜᴇ ʙụᴛᴛᴏɴѕ ʟᴏᴡᴇʀ 𖡼""",
@@ -114,8 +116,42 @@ async def start(client: Client, message: Message):
      )
   )
 
-@Client.on_message(command(["لمطور", f"طور"]) & filters.group & ~filters.edited)
+@Client.on_message(command(["developer","deve"]) & filters.group & ~filters.edited)
 async def help(client: Client, message: Message):
+    await message.delete()
+    await message.reply_photo(
+        photo=f"{DEV_PHOTO}",
+        caption=f"""◍ مش محتاجين نكتب كلام كتير خش ع اول زرار وانت هتعرف""",
+        reply_markup=InlineKeyboardMarkup(
+         [
+            [
+                InlineKeyboardButton("• 𝘿𝙀𝙑𝙀𝙇𝙊𝙋𝙀𝙍 ☤ ", url=f"https://t.me/WORLD_MUSIC_F"),
+            ],
+            [
+                InlineKeyboardButton("ضيـف البـوت لمجمـوعتـك ✅", url=f"https://t.me/{BOT_USERNAME}?startgroup=true"),
+            ]
+         ]
+     )
+  )
+
+@Client.on_message(command2(["مبرمج_السورس","مبرمج السورس","السورس","سورس"]) & filters.group & ~filters.edited)
+async def start(client: Client, message: Message):
+    await message.delete()
+    await message.reply_photo(
+        photo=f"https://telegra.ph/file/a6c96cdbd066ca2388d06.jpg",
+        caption=f"""ᴘʀᴏɢʀᴀᴍᴍᴇʀ [𝘿𝙀𝙑𝙀𝙇𝙊𝙋𝙀𝙍 ☤ ](https://t.me/WORLD_MUSIC_F) 𖡼\nᴛᴏ ᴄᴏᴍᴍụɴɪᴄᴀᴛᴇ ᴛᴏɢᴇᴛʜᴇʀ 𖡼\nғᴏʟʟᴏᴡ ᴛʜᴇ ʙụᴛᴛᴏɴѕ ʟᴏᴡᴇʀ 𖡼""",
+        reply_markup=InlineKeyboardMarkup(
+         [
+            [
+                InlineKeyboardButton("♡اضف البوت الى مجموعتك♡", url=f"https://t.me/WorldMusicly_Bot?startgroup=true"),
+            ]
+         ]
+     )
+  )
+
+@Client.on_message(command2(["المطور","مطور"]) & filters.group & ~filters.edited)
+async def help(client: Client, message: Message):
+    await message.delete()
     await message.reply_photo(
         photo=f"{DEV_PHOTO}",
         caption=f"""◍ مش محتاجين نكتب كلام كتير خش ع اول زرار وانت هتعرف""",
@@ -139,16 +175,25 @@ async def shadow(c: Client, message: Message):
     BOT_TOKEN = time() - start
     await m_reply.edit_text(f"**تم جلب التوكن**\n`{BOT_TOKEN}`")
 
-@Client.on_message(command(["ping", f"بينج"]) & ~filters.edited)
+@Client.on_message(command(["ping"]) & ~filters.edited)
 async def ping_pong(client: Client, message: Message):
+    await message.delete()
     start = time()
     m_reply = await message.reply_text("pinging...")
     delta_ping = time() - start
     await m_reply.edit_text("🏓 `PONG!!`\n" f"⚡️ `{delta_ping * 1000:.3f} ms`")
 
+@Client.on_message(command2(["بينج","بنج","البنج"]) & ~filters.edited)
+async def ping_pong(client: Client, message: Message):
+    await message.delete()
+    start = time()
+    m_reply = await message.reply_text("pinging...")
+    delta_ping = time() - start
+    await m_reply.edit_text("🏓 `PONG!!`\n" f"⚡️ `{delta_ping * 1000:.3f} ms`")
 
 @Client.on_message(command(["uptime", f"uptime@{BOT_USERNAME}"]) & ~filters.edited)
 async def get_uptime(client: Client, message: Message):
+    await message.delete()
     current_time = datetime.utcnow()
     uptime_sec = (current_time - START_TIME).total_seconds()
     uptime = await _human_time_duration(int(uptime_sec))
@@ -158,6 +203,17 @@ async def get_uptime(client: Client, message: Message):
         f"• **start time:** `{START_TIME_ISO}`"
     )
 
+@Client.on_message(command2(["مده التشغيل","مده_التشغيل","فتره التشغيل","فتره_التشغيل"]) & ~filters.edited)
+async def get_uptime(client: Client, message: Message):
+    await message.delete()
+    current_time = datetime.utcnow()
+    uptime_sec = (current_time - START_TIME).total_seconds()
+    uptime = await _human_time_duration(int(uptime_sec))
+    await message.reply_text(
+        "🤖 bot status:\n"
+        f"• **uptime:** `{uptime}`\n"
+        f"• **start time:** `{START_TIME_ISO}`"
+    )
 
 @Client.on_chat_join_request()
 async def approve_join_chat(c: Client, m: ChatJoinRequest):

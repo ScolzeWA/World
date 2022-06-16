@@ -5,6 +5,7 @@ from driver.design.thumbnail import thumb
 from driver.design.chatname import CHAT_TITLE
 from driver.queues import QUEUE, clear_queue
 from driver.filters import command, other_filters
+from driver.filters import command2, other_filters
 from driver.decorators import authorized_users_only
 from driver.utils import skip_current_song, skip_item
 from program.utils.inline import (
@@ -21,9 +22,24 @@ from pyrogram.types import (
 )
 
 
-@Client.on_message(command(["reload", f"تحديث", f"حديث"]) & other_filters)
+@Client.on_message(command(["reload", f"تحديث", f"ح"]) & other_filters)
 @authorized_users_only
 async def update_admin(client, message):
+    await message.delete()
+    global admins
+    new_admins = []
+    new_ads = await client.get_chat_members(message.chat.id, filter="administrators")
+    for u in new_ads:
+        new_admins.append(u.user.id)
+    admins[message.chat.id] = new_admins
+    await message.reply_text(
+        "✅تم إعادة تحميل البوت ** بشكل صحيح! **  \n✅ ** تم تحديث قائمة المسؤولين ** **! ** "
+    )
+    
+@Client.on_message(command2(["اعاده","تحديث_الادمن","حدث_الادمن"]) & other_filters)
+@authorized_users_only
+async def update_admin(client, message):
+    await message.delete()
     global admins
     new_admins = []
     new_ads = await client.get_chat_members(message.chat.id, filter="administrators")
@@ -34,10 +50,56 @@ async def update_admin(client, message):
         "✅تم إعادة تحميل البوت ** بشكل صحيح! **  \n✅ ** تم تحديث قائمة المسؤولين ** **! ** "
     )
 
-
-@Client.on_message(command(["skip", f"تخطي", f"خطي"]) & other_filters)
+@Client.on_message(command(["skip"]) & other_filters)
 @authorized_users_only
 async def skip(c: Client, m: Message):
+    await m.delete()
+    user_id = m.from_user.id
+    chat_id = m.chat.id
+    if len(m.command) < 2:
+        op = await skip_current_song(chat_id)
+        if op == 0:
+            await c.send_message(chat_id, "❌ قائمة التشغيل فارغه")
+        elif op == 1:
+            await c.send_message(chat_id, "✅ قوائم الانتظار ** فارغة. ** \n\n** • خروج المستخدم من الدردشة الصوتية ** ")
+        elif op == 2:
+            await c.send_message(chat_id, "🗑️مسح قوائم الانتظار ** \n \n ** • مغادرة المستخدم الآلي للدردشة الصوتية ** ")
+        else:
+            buttons = stream_markup(user_id)
+            requester = f"[{m.from_user.first_name}](tg://user?id={m.from_user.id})"
+            thumbnail = f"{IMG_5}"
+            title = f"{op[0]}"
+            userid = m.from_user.id
+            gcname = m.chat.title
+            ctitle = await CHAT_TITLE(gcname)
+            image = await thumb(thumbnail, title, userid, ctitle)
+            await c.send_photo(
+                chat_id,
+                photo=image,
+                reply_markup=InlineKeyboardMarkup(buttons),
+                caption=f"⏭ **تم التخطي الئ المسار التالي**\n\n🏷 **الاسم:** [{op[0]}]({op[1]})\n💭 **المجموعة:** `{chat_id}`\n💡 **الحالة:** `شغال`\n🎧 **طلب بواسطة:** {m.from_user.mention()}",
+            )
+    else:
+        skip = m.text.split(None, 1)[1]
+        OP = "🗑 **تمت إزالة الأغنية من قائمة الانتظار:**"
+        if chat_id in QUEUE:
+            items = [int(x) for x in skip.split(" ") if x.isdigit()]
+            items.sort(reverse=True)
+            for x in items:
+                if x == 0:
+                    pass
+                else:
+                    hm = await skip_item(chat_id, x)
+                    if hm == 0:
+                        pass
+                    else:
+                        OP = OP + "\n" + f"**#{x}** - {hm}"
+            await m.reply(OP)
+            
+@Client.on_message(command2(["تخطي"]) & other_filters)
+@authorized_users_only
+async def skip(c: Client, m: Message):
+    await m.delete()
     user_id = m.from_user.id
     chat_id = m.chat.id
     if len(m.command) < 2:
@@ -82,11 +144,12 @@ async def skip(c: Client, m: Message):
 
 
 @Client.on_message(
-    command(["stop", f"نهاء", f"انهاء",])
+    command(["stop","end"])
     & other_filters
 )
 @authorized_users_only
 async def stop(client, m: Message):
+    await m.delete()
     chat_id = m.chat.id
     if chat_id in QUEUE:
         try:
@@ -99,11 +162,48 @@ async def stop(client, m: Message):
         await m.reply("❌ **قائمة التشغيل فارغه**")
         
 @Client.on_message(
-    command(["end", f"اسكت", f"سكت"])
+    command2(["انهاء"])
     & other_filters
 )
 @authorized_users_only
 async def stop(client, m: Message):
+    await m.delete()
+    chat_id = m.chat.id
+    if chat_id in QUEUE:
+        try:
+            await call_py.leave_group_call(chat_id)
+            clear_queue(chat_id)
+            await m.reply("✅ **تم ايقاف التشغيل**")
+        except Exception as e:
+            await m.reply(f"🚫 **خطأ:**\n\n`{e}`")
+    else:
+        await m.reply("❌ **قائمة التشغيل فارغه**")
+        
+@Client.on_message(
+    command(["end"])
+    & other_filters
+)
+@authorized_users_only
+async def stop(client, m: Message):
+    await m.delete()
+    chat_id = m.chat.id
+    if chat_id in QUEUE:
+        try:
+            await call_py.leave_group_call(chat_id)
+            clear_queue(chat_id)
+            await m.reply("حاضر هسكت اهو🥲")
+        except Exception as e:
+            await m.reply(f"🚫 **خطأ:**\n\n`{e}`")
+    else:
+        await m.reply("مفيش حاجه شغاله عشان اسكت")
+        
+@Client.on_message(
+    command2(["اسكت"])
+    & other_filters
+)
+@authorized_users_only
+async def stop(client, m: Message):
+    await m.delete()
     chat_id = m.chat.id
     if chat_id in QUEUE:
         try:
@@ -117,10 +217,29 @@ async def stop(client, m: Message):
 
 
 @Client.on_message(
-    command(["pause", f"ايقاف", f"يقاف"]) & other_filters
+    command(["pause"]) & other_filters
 )
 @authorized_users_only
 async def pause(client, m: Message):
+    await m.delete()
+    chat_id = m.chat.id
+    if chat_id in QUEUE:
+        try:
+            await call_py.pause_stream(chat_id)
+            await m.reply(
+                "⏸ **تم ايقاف المسار موقتآ**\n\n• **لٲستئناف البث استخدم**\n» /resume الامر."
+            )
+        except Exception as e:
+            await m.reply(f"🚫 **خطأ:**\n\n`{e}`")
+    else:
+        await m.reply("❌ **قائمة التشغيل فارغه**")
+        
+@Client.on_message(
+    command2(["ايقاف","ايقاف_مؤقت","توقف"]) & other_filters
+)
+@authorized_users_only
+async def pause(client, m: Message):
+    await m.delete()
     chat_id = m.chat.id
     if chat_id in QUEUE:
         try:
@@ -135,10 +254,29 @@ async def pause(client, m: Message):
 
 
 @Client.on_message(
-    command(["resume", f"vresume", f"استكمال", f"ستكمال", f"تكمل", f"كمل", f"استئناف", f"ستئناف", f"استئنف", f"ستئنف"]) & other_filters
+    command(["resume","vresume"]) & other_filters
 )
 @authorized_users_only
 async def resume(client, m: Message):
+    await m.delete()
+    chat_id = m.chat.id
+    if chat_id in QUEUE:
+        try:
+            await call_py.resume_stream(chat_id)
+            await m.reply(
+                "▶️ **تم استئناف المسار**\n\n• **لايقاف البث موقتآ استخدم**\n» /pause الامر"
+            )
+        except Exception as e:
+            await m.reply(f"🚫 **خطأ:**\n\n`{e}`")
+    else:
+        await m.reply("❌ **قائمة التشغيل فارغه**")
+        
+@Client.on_message(
+    command2(["كمل","استكمال","استكمل"]) & other_filters
+)
+@authorized_users_only
+async def resume(client, m: Message):
+    await m.delete()
     chat_id = m.chat.id
     if chat_id in QUEUE:
         try:
@@ -153,10 +291,11 @@ async def resume(client, m: Message):
 
 
 @Client.on_message(
-    command(["mute", f"ميوت", f"يوت"]) & other_filters
+    command(["mute"]) & other_filters
 )
 @authorized_users_only
 async def mute(client, m: Message):
+    await m.delete()
     chat_id = m.chat.id
     if chat_id in QUEUE:
         try:
@@ -169,12 +308,30 @@ async def mute(client, m: Message):
     else:
         await m.reply("❌ **قائمة التشغيل فارغه**")
 
+@Client.on_message(
+    command(["ميوت"]) & other_filters
+)
+@authorized_users_only
+async def mute(client, m: Message):
+    await m.delete()
+    chat_id = m.chat.id
+    if chat_id in QUEUE:
+        try:
+            await call_py.mute_stream(chat_id)
+            await m.reply(
+                "🔇 **تم كتم الصوت**\n\n• **لرفع الكتم استخدم**\n» /unmute الامر" 
+            )
+        except Exception as e:
+            await m.reply(f"🚫 **خطأ:**\n\n`{e}`")
+    else:
+        await m.reply("❌ **قائمة التشغيل فارغه**")
 
 @Client.on_message(
-    command(["unmute", f"فكميوت", f"كميوت"]) & other_filters
+    command(["unmute"]) & other_filters
 )
 @authorized_users_only
 async def unmute(client, m: Message):
+    await m.delete()
     chat_id = m.chat.id
     if chat_id in QUEUE:
         try:
@@ -187,6 +344,23 @@ async def unmute(client, m: Message):
     else:
         await m.reply("❌ **قائمة التشغيل فارغه**")
 
+@Client.on_message(
+    command2(["فك_ميوت","حذف_الميوت","حذف الميوت","فك ميوت","ازاله ميوت","ازاله_ميوت"]) & other_filters
+)
+@authorized_users_only
+async def unmute(client, m: Message):
+    await m.delete()
+    chat_id = m.chat.id
+    if chat_id in QUEUE:
+        try:
+            await call_py.unmute_stream(chat_id)
+            await m.reply(
+                "🔊 **تم رفع الكتم**\n\n• **لكتم الصوت استخدم**\n» /mute الامر"
+            )
+        except Exception as e:
+            await m.reply(f"🚫 **خطأ:**\n\n`{e}`")
+    else:
+        await m.reply("❌ **قائمة التشغيل فارغه**")
 
 @Client.on_callback_query(filters.regex("cbpause"))
 async def cbpause(_, query: CallbackQuery):
@@ -282,7 +456,25 @@ async def cbunmute(_, query: CallbackQuery):
 
 
 @Client.on_message(
-    command(["volume", f"تحكم" f"حكم"]) & other_filters
+    command(["volume"]) & other_filters
+)
+@authorized_users_only
+async def change_volume(client, m: Message):
+    range = m.command[1]
+    chat_id = m.chat.id
+    if chat_id in QUEUE:
+        try:
+            await call_py.change_volume_call(chat_id, volume=int(range))
+            await m.reply(
+                f"✅ **تم ضبط الصوت على** `{range}`%"
+            )
+        except Exception as e:
+            await m.reply(f"🚫 **خطأ:**\n\n`{e}`")
+    else:
+        await m.reply("❌ **قائمة التشغيل فارغه**")
+        
+@Client.on_message(
+    command2(["تحكم","صوت"]) & other_filters
 )
 @authorized_users_only
 async def change_volume(client, m: Message):

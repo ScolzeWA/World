@@ -36,7 +36,7 @@ async def ytsearch(_, message: Message):
         ),
     )
     
-@Client.on_message(command2(["بحث"]))
+@Client.on_message(command2(["بحث_يوتيوب"]))
 async def ytsearch(_, message: Message):
     await message.delete()
     if len(message.command) < 2:

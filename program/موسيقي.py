@@ -15,6 +15,7 @@ from program.utils.inline import stream_markup
 from driver.design.thumbnail import thumb
 from driver.design.chatname import CHAT_TITLE
 from driver.filters import command, other_filters
+from driver.filters import command2, other_filters
 from driver.queues import QUEUE, add_to_queue
 from driver.veez import call_py, user
 from driver.utils import bash
@@ -46,7 +47,7 @@ async def ytdl(link: str):
     return 0, stderr
 
 
-@Client.on_message(command(["mplay","play"]) & other_filters)
+@Client.on_message(command2(["تشغيل","شغل"]) & other_filters)
 async def play(c: Client, m: Message):
     await m.delete()
     replied = m.reply_to_message

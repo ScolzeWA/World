@@ -86,7 +86,7 @@ async def leave_chat(_, m: Message):
         )
 
 
-@Client.on_message(command(["leaveall", f"مغادره"]))
+@Client.on_message(command(["leaveall"]))
 @sudo_users_only
 async def leave_all(client, message):
     await message.delete()
