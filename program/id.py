@@ -1,7 +1,7 @@
 from pyrogram import Client
 from pyrogram.types import Message
 from config import BOT_USERNAME
-from driver.filters import command2, other_filters
+from driver.filters import command, other_filters
 from driver.get_file_id import get_file_id
 
 
