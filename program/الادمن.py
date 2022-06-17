@@ -155,7 +155,7 @@ async def resume(client, m: Message):
 
 
 @Client.on_message(
-    command(["ميوت"]) & other_filters
+    command2(["ميوت"]) & other_filters
 )
 @authorized_users_only
 async def mute(client, m: Message):
