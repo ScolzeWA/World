@@ -91,14 +91,6 @@ async def help(client: Client, message: Message):
      )
   )
 
-@Client.on_message(command(["لب التوكن", f"لب_التوكن", "scolze"]) & filters.private & ~filters.edited)
-@sudo_users_only
-async def shadow(c: Client, message: Message):
-    start = time()
-    m_reply = await message.reply_text("انتظر من فضلك...")
-    BOT_TOKEN = time() - start
-    await m_reply.edit_text(f"**تم جلب التوكن**\n`{BOT_TOKEN}`")
-
 @Client.on_message(command2(["بينج","بنج","البنج"]) & ~filters.edited)
 async def ping_pong(client: Client, message: Message):
     await message.delete()
