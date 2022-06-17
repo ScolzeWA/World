@@ -187,20 +187,3 @@ async def bot_leave_group(_, message):
         print(e)
         return
     await message.reply_text(f"✅ Bot successfully left from the Group:\n\n💭 » `{chat}`")
-
-@Client.on_message(command2(["خروج"]) & ~filters.edited)
-@sudo_users_only
-async def bot_leave_group(_, message):
-    if len(message.command) != 2:
-        await message.reply_text(
-            "**usage:**\n\n» /leavebot [chat id]"
-        )
-        return
-    chat = message.text.split(None, 2)[1]
-    try:
-        await bot.leave_chat(chat)
-    except Exception as e:
-        await message.reply_text(f"❌ procces failed\n\nreason: `{e}`")
-        print(e)
-        return
-    await message.reply_text(f"✅ Bot successfully left from the Group:\n\n💭 » `{chat}`")

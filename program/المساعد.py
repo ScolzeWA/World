@@ -3,7 +3,7 @@ from driver.veez import user
 from pyrogram.types import Message
 from pyrogram import Client, filters
 from config import BOT_USERNAME, SUDO_USERS
-from driver.filters import command, other_filters
+from driver.filters import command2, other_filters
 from pyrogram.errors import UserAlreadyParticipant, UserNotParticipant
 from driver.decorators import authorized_users_only, sudo_users_only
 from config import SUDO_USERS, ASSISTANT_NAME
@@ -11,7 +11,7 @@ from driver.decorators import authorized_users_only, sudo_users_only, errors
 
 
 @Client.on_message(
-    command(["userbotjoin"]) & other_filters
+    command2(["انضم"]) & other_filters
 )
 @authorized_users_only
 async def join_chat(c: Client, m: Message):
@@ -29,7 +29,7 @@ async def join_chat(c: Client, m: Message):
         return await user.send_message(chat_id, "انا موجود هنا😐")
 
 @Client.on_message(
-    command(["userbotleave"]) & other_filters
+    command2(["غادر","خروج المساعد"]) & other_filters
 )
 @authorized_users_only
 async def leave_chat(_, m: Message):
@@ -46,8 +46,8 @@ async def leave_chat(_, m: Message):
             chat_id,
             "❌ غادر الحساب المساعد المجموعه بالفعل",
         )
-        
-@Client.on_message(command(["leaveall"]))
+    
+@Client.on_message(command2(["مغادره"]))
 @sudo_users_only
 async def leave_all(client, message):
     await message.delete()
@@ -75,7 +75,7 @@ async def leave_all(client, message):
     await client.send_message(
         message.chat.id, f"✅ Left from: {left} chats.\n❌ Failed in: {failed} chats."
     )
-    
+
 @Client.on_message(filters.left_chat_member)
 async def ubot_leave(c: Client, m: Message):
 #    ass_id = (await user.get_me()).id

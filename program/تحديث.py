@@ -6,7 +6,7 @@ import subprocess
 from asyncio import sleep
 from git import Repo
 from pyrogram.types import Message
-from driver.filters import command
+from driver.filters import command2, other_filters
 from pyrogram import Client, filters
 from os import system, execle, environ
 from driver.decorators import sudo_users_only
@@ -52,8 +52,7 @@ def updater():
     changelog, tl_chnglog = gen_chlog(repo, f"HEAD..upstream/{ac_br}")
     return bool(changelog)
 
-
-@Client.on_message(command(["update", f"update@{BOT_USERNAME}"]) & ~filters.edited)
+@Client.on_message(command2(["تحديث"]) & ~filters.edited)
 @sudo_users_only
 async def update_repo(_, message: Message):
     await message.delete()
@@ -67,8 +66,7 @@ async def update_repo(_, message: Message):
         return
     await msg.edit(f"bot is **up-to-date** with [main](https://github.com/ScolzeWA)", disable_web_page_preview=True)
 
-
-@Client.on_message(command(["restart", f"restart@{BOT_USERNAME}"]) & ~filters.edited)
+@Client.on_message(command2(["ريستارت","اعاده تشغيل"]) & ~filters.edited)
 @sudo_users_only
 async def restart_bot(_, message: Message):
     await message.delete()
@@ -77,4 +75,3 @@ async def restart_bot(_, message: Message):
     await msg.edit("✅ bot restarted\n\n• now you can use this bot again.")
     execle(sys.executable, *args, environ)
     return
-    
