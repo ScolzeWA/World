@@ -34,15 +34,14 @@ async def help_cmd(client: Client, message: Message):
             [
                 [
                     InlineKeyboardButton(
-                        "👥 جروب الدعم", url=f"https://t.me/{GROUP_SUPPORT}"
+                        "📣 المطور", url=f"https://t.me/WORLD_MUSIC_F"
                     ),
                     InlineKeyboardButton(
                         "📣 قناة البوت", url=f"https://t.me/Ch_World_Music"
                     )
                 ],
                 [
-                    InlineKeyboardButton(
-                        "📣 المطور", url=f"https://t.me/WORLD_MUSIC_F"
+                    InlineKeyboardButton("🔙 رجوع", callback_data="cbstart")
                     )
                 ]
             ]

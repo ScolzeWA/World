@@ -78,12 +78,14 @@ async def start_(client: Client, message: Message):
             [
                 [
                     InlineKeyboardButton(
-                        "• نـصـب بـوتك مـن هـنا •", url="https://t.me/Ch_World_Music",
+                        "ضيـف البـوت لمجمـوعتـك ✅",
+                        url=f"https://t.me/{BOT_USERNAME}?startgroup=true"
                     )
                 ],
                 [InlineKeyboardButton("", callback_data="cbhowtouse")],
                 [
-                    InlineKeyboardButton("📚 الاوامر", callback_data="cbcmds"),
+                     InlineKeyboardButton(
+                        "الاوامر", url=f"https://telegra.ph/%F0%9D%99%B2%E1%B4%8F%E1%B4%8D%E1%B4%8D%E1%B4%80%C9%B4%E1%B4%85s-04-06"),
                     InlineKeyboardButton("❤️ المطور", url=f"https://t.me/{OWNER_NAME}"),
                 ],
                 [
@@ -93,14 +95,6 @@ async def start_(client: Client, message: Message):
                     InlineKeyboardButton(
                         "📣 قناة البوت", url=f"https://t.me/{UPDATES_CHANNEL}"
                     ),
-                ],
-                [
-                    InlineKeyboardButton(
-                        "الاوامر", url=f"https://telegra.ph/%F0%9D%99%B2%E1%B4%8F%E1%B4%8D%E1%B4%8D%E1%B4%80%C9%B4%E1%B4%85s-04-06"),
-                    InlineKeyboardButton(
-                        "ضيـف البـوت لمجمـوعتـك ✅",
-                        url=f"https://t.me/{BOT_USERNAME}?startgroup=true"
-                    )
                 ],
             ]
         ),
