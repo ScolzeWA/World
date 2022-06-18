@@ -35,7 +35,7 @@ async def cbstart(_, query: CallbackQuery):
                 [
                 InlineKeyboardButton(
                         "ضيـف البـوت لمجمـوعتـك ✅",
-                        url=f"https://t.me/{BOT_USERNAME}?startgroup=true"],
+                        url=f"https://t.me/{BOT_USERNAME}?startgroup=true")],
                 [
                      InlineKeyboardButton(
                         "الاوامر", url=f"https://telegra.ph/%F0%9D%99%B2%E1%B4%8F%E1%B4%8D%E1%B4%8D%E1%B4%80%C9%B4%E1%B4%85s-04-06"),
