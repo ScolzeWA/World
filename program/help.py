@@ -42,7 +42,6 @@ async def help_cmd(client: Client, message: Message):
                 ],
                 [
                     InlineKeyboardButton("🔙 رجوع", callback_data="cbstart")
-                    )
                 ]
             ]
        ),
